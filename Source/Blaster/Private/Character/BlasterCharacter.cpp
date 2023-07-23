@@ -196,7 +196,7 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 bool ABlasterCharacter::IsWeaponEquipped()
 {
-	return (Combat && Combat->EqippedWeapon);
+	return (Combat && Combat->EquippedWeapon);
 }
 
 bool ABlasterCharacter::IsAiming()

@@ -7,6 +7,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Components/SphereComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -31,6 +32,15 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	ServerSetAiming(bIsAiming);
 }
 
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	if (EquippedWeapon && Character)
+	{
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Character->bUseControllerRotationYaw = true;
+	}
+}
+
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 {
 	bAiming = bIsAiming;
@@ -46,7 +56,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(UCombatComponent, EqippedWeapon);
+	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
 }
 
@@ -55,13 +65,15 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	if (Character == nullptr || WeaponToEquip == nullptr)
 		return;
 
-	EqippedWeapon = WeaponToEquip;
-	EqippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
 	if (HandSocket)
 	{
-		HandSocket->AttachActor(EqippedWeapon, Character->GetMesh());
+		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
-	EqippedWeapon->SetOwner(Character);
+	EquippedWeapon->SetOwner(Character);
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
 }
 
