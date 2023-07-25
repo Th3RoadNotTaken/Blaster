@@ -43,6 +43,8 @@ protected:
 	void AimButtonPressed();
 	void AimButtonReleased();
 
+	void AimOffset(float DeltaTime);
+
 	//
 	// Enhanced Input Components
 	//
@@ -85,9 +87,15 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed();
 
+	float AO_Yaw;
+	float AO_Pitch;
+	FRotator StartingAimRotation;
+
 public:
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
 	bool IsAiming();
+	FORCEINLINE float GetAOYaw() const { return AO_Yaw; }
+	FORCEINLINE float GetAOPitch() const { return AO_Pitch; }
 };

@@ -48,7 +48,13 @@ private:
 	float YawOffset;
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	float Lean;
+
 	FRotator ChracterRotationLastFrame;
 	FRotator CharacterRotation;
 	FRotator DeltaRotation;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
+	float AO_Yaw;
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
+	float AO_Pitch;
 };
