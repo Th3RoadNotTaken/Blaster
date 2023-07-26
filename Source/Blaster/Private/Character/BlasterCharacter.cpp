@@ -164,6 +164,15 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 	}
 
 	AO_Pitch = GetBaseAimRotation().Pitch;
+	// Fixing the issue where if a client looks down, the server sees the client looking up since the pitch values that are sent to the server
+	// are compressed to this range [270,360]
+	if (AO_Pitch > 90.f && !IsLocallyControlled())
+	{
+		// Map pitch from the range [270,360] to [-90,0]
+		FVector2D InRange(270.f, 360.f);
+		FVector2D OutRange(-90.f, 0.f);
+		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
+	}
 }
 
 void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
@@ -235,4 +244,12 @@ bool ABlasterCharacter::IsWeaponEquipped()
 bool ABlasterCharacter::IsAiming()
 {
 	return (Combat && Combat->bAiming);
+}
+
+AWeapon* ABlasterCharacter::GetEquippedWeapon()
+{
+	if (Combat == nullptr)
+		return nullptr;
+
+	return Combat->EquippedWeapon;
 }

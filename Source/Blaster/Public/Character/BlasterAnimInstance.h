@@ -7,6 +7,7 @@
 #include "BlasterAnimInstance.generated.h"
 
 class ABlasterCharacter;
+class AWeapon;
 
 /**
  * 
@@ -38,6 +39,8 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	bool bWeaponEquipped;
 
+	AWeapon* EquippedWeapon;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	bool bIsCrouched;
 
@@ -57,4 +60,7 @@ private:
 	float AO_Yaw;
 	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
 	float AO_Pitch;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = true))
+	FTransform LeftHandTransform;
 };
