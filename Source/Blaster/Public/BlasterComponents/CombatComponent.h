@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
+#define TRACE_LENGTH 80000.f
+
 class AWeapon;
 class ABlasterCharacter;
 
@@ -32,6 +34,14 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	void FireButtonPressed(bool bPressed);
+	UFUNCTION(Server, Reliable)
+	void ServerFire();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastFire();
+
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+
 private:
 
 	ABlasterCharacter* Character;
@@ -44,6 +54,8 @@ private:
 	float BaseWalkSpeed = 600.f;
 	UPROPERTY(EditAnywhere)
 	float AimWalkSpeed = 450.f;
+
+	bool bFireButtonPressed;
 
 public:	
 		
