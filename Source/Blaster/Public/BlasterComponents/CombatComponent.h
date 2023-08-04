@@ -56,6 +56,7 @@ private:
 	float AimWalkSpeed = 450.f;
 
 	bool bFireButtonPressed;
+	FVector HitTarget;
 
 public:	
 		
