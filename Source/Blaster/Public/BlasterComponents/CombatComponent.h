@@ -10,6 +10,8 @@
 
 class AWeapon;
 class ABlasterCharacter;
+class ABlasterPlayerController;
+class ABlasterHUD;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BLASTER_API UCombatComponent : public UActorComponent
@@ -36,15 +38,20 @@ protected:
 
 	void FireButtonPressed(bool bPressed);
 	UFUNCTION(Server, Reliable)
-	void ServerFire();
+	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastFire();
+	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+
+	void SetHUDCrosshairs(float DeltaTime);
 
 private:
 
 	ABlasterCharacter* Character;
+	ABlasterPlayerController* Controller;
+	ABlasterHUD* HUD;
+
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeapon* EquippedWeapon;
 	UPROPERTY(Replicated)
@@ -56,7 +63,6 @@ private:
 	float AimWalkSpeed = 450.f;
 
 	bool bFireButtonPressed;
-	FVector HitTarget;
 
 public:	
 		
