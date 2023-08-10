@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "HUD/BlasterHUD.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 80000.f
@@ -37,6 +38,7 @@ protected:
 	void OnRep_EquippedWeapon();
 
 	void FireButtonPressed(bool bPressed);
+	void Fire();
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
 	UFUNCTION(NetMulticast, Reliable)
@@ -63,6 +65,39 @@ private:
 	float AimWalkSpeed = 450.f;
 
 	bool bFireButtonPressed;
+	FVector HitTarget;
+
+	/**
+	* HUD and Crosshairs
+	*/
+	FHUDPackage HUDPackage;
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
+	float CrosshairAimFactor;
+	float CrosshairShootingFactor;
+	bool bAimingAtPlayer;
+	float CrosshairAtPlayerFactor;
+
+	/** 
+	* Automatic Fire
+	*/
+	FTimerHandle FireTimer;
+	bool bCanFire = true;
+	void StartFireTimer();
+	void FireTimerFinished();
+
+	/** 
+	* Aiming and FOV
+	*/
+	// Field of view when not aiming; set to the camera's base FOV in BeginPlay
+	float DefaultFOV;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ZoomedFOV = 30.f;
+	float CurrentFOV;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ZoomInterpSpeed = 20.f;
+
+	void InterpFOV(float DeltaTime);
 
 public:	
 		
