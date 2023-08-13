@@ -16,6 +16,7 @@ class UCameraComponent;
 class UWidgetComponent;
 class AWeapon;
 class UCombatComponent;
+class ABlasterPlayerController;
 
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
@@ -31,11 +32,13 @@ public:
 	virtual void PostInitializeComponents() override;
 	
 	void PlayFireMontage(bool bAiming);
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
-
+	void PlayElimMontage();
 	// This function is used whenever movement changes and is replicated. We will use this function to update the delta for turn in place for sim proxies
 	virtual void OnRep_ReplicatedMovement() override; 
+	// To be called only on the server
+	void Elim();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastElim();
 
 protected:
 
@@ -58,6 +61,9 @@ protected:
 	void CalculateAO_Pitch();
 	void SimProxiesTurn();
 	void PlayHitReactMontage();
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+	void UpdateHUDHealth();
 
 	//
 	// Enhanced Input Components
@@ -118,6 +124,8 @@ private:
 	UAnimMontage* FireWeaponMontage;
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage* HitReactMontage;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage* ElimMontage;
 
 	void HideCameraIfCharacterClose();
 	UPROPERTY(EditAnywhere)
@@ -131,6 +139,24 @@ private:
 	float TimeSinceLastMovementReplication;
 	float CalculateSpeed();
 
+	/**
+	* Player Health
+	*/
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth = 100.f;
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Players Stats")
+	float Health = 100.f;
+	bool bElimmed = false;
+	UFUNCTION()
+	void OnRep_Health();
+
+	ABlasterPlayerController* BlasterPlayerController;
+
+	FTimerHandle ElimTimer;
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
+	void ElimTimerFinished();
+
 public:
 
 	void SetOverlappingWeapon(AWeapon* Weapon);
@@ -143,4 +169,5 @@ public:
 	FVector GetHitTarget() const;
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
+	FORCEINLINE bool IsElimmed() const { return bElimmed; }
 };
