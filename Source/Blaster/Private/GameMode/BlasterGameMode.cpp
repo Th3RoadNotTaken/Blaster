@@ -37,28 +37,33 @@ void ABlasterGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController*
 			BlasterActors
 		);
 
-		float MaxDistanceFromRespawn = -1.f;
-		int32 Selection = 0;
-		int32 Index = 0;
-		for (auto PlayerStart : PlayerStarts)
-		{
-			float MinDistance = (PlayerStart->GetActorLocation() - BlasterActors[0]->GetActorLocation()).Size();
-			for (auto BlasterActor : BlasterActors)
-			{
-				float Distance = (PlayerStart->GetActorLocation() - BlasterActor->GetActorLocation()).Size();
-				if (Distance < MinDistance)
-				{
-					MinDistance = Distance;
-				}
-			}
-			if (MinDistance > MaxDistanceFromRespawn)
-			{
-				MaxDistanceFromRespawn = MinDistance;
-				Selection = Index;
-			}
-			Index++;
-		}
-		
+		int32 Selection = CalculateFavourableRespawnPoint(PlayerStarts, BlasterActors);
 		RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
 	}
+}
+
+int32 ABlasterGameMode::CalculateFavourableRespawnPoint(TArray<AActor*> PlayerStarts, TArray<AActor*> BlasterActors)
+{
+	float MaxDistanceFromRespawn = -1.f;
+	int32 Selection = 0;
+	int32 Index = 0;
+	for (auto PlayerStart : PlayerStarts)
+	{
+		float MinDistance = (PlayerStart->GetActorLocation() - BlasterActors[0]->GetActorLocation()).Size();
+		for (auto BlasterActor : BlasterActors)
+		{
+			float Distance = (PlayerStart->GetActorLocation() - BlasterActor->GetActorLocation()).Size();
+			if (Distance < MinDistance)
+			{
+				MinDistance = Distance;
+			}
+		}
+		if (MinDistance > MaxDistanceFromRespawn)
+		{
+			MaxDistanceFromRespawn = MinDistance;
+			Selection = Index;
+		}
+		Index++;
+	}
+	return Selection;
 }
