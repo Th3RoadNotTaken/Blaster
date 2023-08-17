@@ -22,6 +22,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "PlayerState/BlasterPlayerState.h"
 
 ABlasterCharacter::ABlasterCharacter()
 {
@@ -113,6 +114,8 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		CameraBoomCurrentLocation = FMath::VInterpTo(CameraBoomCurrentLocation, CameraBoomDefaultLocation, DeltaTime, 6.f);
 		CameraBoom->SocketOffset = CameraBoomCurrentLocation;
 	}
+
+	PollInit();
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -508,6 +511,19 @@ void ABlasterCharacter::UpdateHUDHealth()
 	if (BlasterPlayerController)
 	{
 		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
+}
+
+void ABlasterCharacter::PollInit()
+{
+	if (BlasterPlayerState == nullptr)
+	{
+		BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
+		if (BlasterPlayerState)
+		{
+			BlasterPlayerState->AddToScore(0.f);
+			BlasterPlayerState->AddToDeaths(0);
+		}
 	}
 }
 

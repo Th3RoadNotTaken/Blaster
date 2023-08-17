@@ -90,6 +90,15 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			Start,
 			End,
 			ECollisionChannel::ECC_Visibility);
+
+		// Don't trace own character
+		ABlasterCharacter* HitCharacter = Cast<ABlasterCharacter>(TraceHitResult.GetActor());
+		if (HitCharacter == Character)
+		{
+			TraceHitResult.ImpactPoint = End;
+			return;
+		}
+
 		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>())
 		{
 			bAimingAtPlayer = true;
@@ -97,6 +106,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		}
 		else
 		{
+			TraceHitResult.ImpactPoint = End;
 			bAimingAtPlayer = false;
 			HUDPackage.CrosshairsColor = FLinearColor::White;
 		}

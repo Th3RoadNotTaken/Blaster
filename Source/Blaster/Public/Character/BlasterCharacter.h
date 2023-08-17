@@ -19,6 +19,7 @@ class AWeapon;
 class UCombatComponent;
 class ABlasterPlayerController;
 class USoundCue;
+class ABlasterPlayerState;
 
 UCLASS()
 class BLASTER_API ABlasterCharacter : public ACharacter, public IInteractWithCrosshairsInterface
@@ -67,6 +68,8 @@ protected:
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
 	void UpdateHUDHealth();
+	// Poll for any relevant classes and initialize our HUD
+	void PollInit();
 
 	//
 	// Enhanced Input Components
@@ -153,6 +156,7 @@ private:
 	UFUNCTION()
 	void OnRep_Health();
 
+	UPROPERTY()
 	ABlasterPlayerController* BlasterPlayerController;
 
 	FTimerHandle ElimTimer;
@@ -188,6 +192,9 @@ private:
 	UParticleSystemComponent* ElimBotComponent;
 	UPROPERTY(EditAnywhere)
 	USoundCue* ElimBotSound;
+
+	UPROPERTY()
+	ABlasterPlayerState* BlasterPlayerState;
 
 public:
 
