@@ -88,6 +88,7 @@ private:
 	bool bCanFire = true;
 	void StartFireTimer();
 	void FireTimerFinished();
+	bool CanFire();
 
 	/** 
 	* Aiming and FOV
