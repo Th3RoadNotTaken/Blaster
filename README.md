@@ -16,5 +16,6 @@ I'm creating a competitive shooter which will consist of game modes such as team
 * Game mode class for defining the rules of the game such as when the player gets eliminated and how to respawn the player.
 * Player state class for defining the rules to update player scores and defeats.
 * Parameterized material instances for dissolving the character mesh once eliminated.
+* HUD elements such as health bars, ammo count, match timers, player scores, etc. 
 
 I'm currently working on implementing Weapon Ammo and Player's Carried Ammo.
