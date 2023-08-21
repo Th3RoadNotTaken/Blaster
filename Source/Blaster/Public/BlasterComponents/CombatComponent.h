@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "HUD/BlasterHUD.h"
+#include "Weapon/WeaponTypes.h"
+#include "BlasterTypes/CombatState.h"
 #include "CombatComponent.generated.h"
 
 #define TRACE_LENGTH 80000.f
@@ -27,6 +29,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void EquipWeapon(AWeapon* WeaponToEquip);
+	void Reload();
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
 
 protected:
 	
@@ -45,8 +50,13 @@ protected:
 	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
-
 	void SetHUDCrosshairs(float DeltaTime);
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
+	// This function will handle all reload functionality on the server and all clients
+	void HandleReload();
+	int32 AmountToReload();
 
 private:
 
@@ -89,6 +99,16 @@ private:
 	void StartFireTimer();
 	void FireTimerFinished();
 	bool CanFire();
+	// Carried ammo for the currently equipped weapon
+	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
+	int32 CarriedAmmo;
+	UFUNCTION()
+	void OnRep_CarriedAmmo();
+	TMap<EWeaponType, int32> CarriedAmmoMap;
+	UPROPERTY(EditAnywhere)
+	int32 StartingARAmmo = 30;
+	void InitializeCarriedAmmo();
+	void UpdateAmmoValues();
 
 	/** 
 	* Aiming and FOV
@@ -103,6 +123,11 @@ private:
 
 	void InterpFOV(float DeltaTime);
 
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	ECombatState CombatState = ECombatState::ECS_Unoccupied;
+	UFUNCTION()
+	void OnRep_CombatState();
+
 public:	
-		
+
 };

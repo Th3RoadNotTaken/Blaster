@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Weapon/WeaponTypes.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -37,6 +38,7 @@ public:
 	void ShowPickupWidget(bool bShowWidget);
 	virtual void Fire(const FVector& HitTarget);
 	void Dropped();
+	void AddAmmo(int32 AmmoToAdd);
 
 	/**
 	* Textures for the weapon crosshairs
@@ -59,6 +61,9 @@ public:
 	float FireDelay = 0.15f;
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	bool bAutomaticWeapon = true;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* EquipSound;
 
 protected:
 	
@@ -113,6 +118,9 @@ private:
 	UFUNCTION()
 	void OnRep_WeaponState();
 
+	UPROPERTY(EditAnywhere)
+	EWeaponType WeaponType;
+
 public:	
 	
 	void SetWeaponState(EWeaponState State);
@@ -121,4 +129,7 @@ public:
 	FORCEINLINE float GetZoomedFOV() const { return ZoomedFOV; }
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
 	bool IsEmpty();
+	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
+	FORCEINLINE int32 GetAmmo() const { return Ammo; }
+	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 };

@@ -8,6 +8,7 @@
 #include "BlasterTypes/TurningInPlace.h"
 #include "Interfaces/InteractWithCrosshairsInterface.h"
 #include "Components/TimelineComponent.h"
+#include "BlasterTypes/CombatState.h"
 #include "BlasterCharacter.generated.h"
 
 class UInputMappingContext;
@@ -35,6 +36,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	
 	void PlayFireMontage(bool bAiming);
+	void PlayReloadMontage();
 	void PlayElimMontage();
 	// This function is used whenever movement changes and is replicated. We will use this function to update the delta for turn in place for sim proxies
 	virtual void OnRep_ReplicatedMovement() override; 
@@ -60,6 +62,7 @@ protected:
 	void AimButtonReleased();
 	void FireButtonPressed();
 	void FireButtonReleased();
+	void ReloadButtonPressed();
 
 	void AimOffset(float DeltaTime);
 	void CalculateAO_Pitch();
@@ -91,6 +94,8 @@ protected:
 	UInputAction* AimAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* FireAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* ReloadAction;
 
 private:
 
@@ -109,7 +114,7 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	AWeapon* OverlappingWeapon;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UCombatComponent* Combat;
 
 	UFUNCTION()
@@ -126,8 +131,13 @@ private:
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
 
+	/** 
+	* Animation montages
+	*/
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage* FireWeaponMontage;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage* ReloadMontage;
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditAnywhere, Category = "Combat")
@@ -211,4 +221,5 @@ public:
 	FORCEINLINE bool IsElimmed() const { return bElimmed; }
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+	ECombatState GetCombatState() const;
 };
