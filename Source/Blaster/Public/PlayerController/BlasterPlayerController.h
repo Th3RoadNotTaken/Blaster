@@ -21,6 +21,7 @@ public:
 	void SetHUDDeaths(int32 Death);
 	void SetHUDWeaponAmmo(int32 Ammo);
 	void SetHUDCarriedAmmo(int32 Ammo);
+	void SetHUDWeaponType(FText WeaponType);
 	virtual void OnPossess(APawn* InPawn) override;
 
 protected:

@@ -217,6 +217,7 @@ void ABlasterCharacter::MulticastElim_Implementation()
 	if (BlasterPlayerController)
 	{
 		BlasterPlayerController->SetHUDWeaponAmmo(0);
+		BlasterPlayerController->SetHUDWeaponType(FText());
 	}
 	bElimmed = true;
 	PlayElimMontage();

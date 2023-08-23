@@ -135,6 +135,15 @@ void AWeapon::OnRep_Owner()
 	else
 	{
 		SetHUDAmmo();
+		BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
+		if (BlasterOwnerCharacter)
+		{
+			BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(BlasterOwnerCharacter->Controller) : BlasterOwnerController;
+			if (BlasterOwnerController)
+			{
+				BlasterOwnerController->SetHUDWeaponType(WeaponName);
+			}
+		}
 	}
 }
 

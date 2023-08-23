@@ -268,14 +268,17 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	}
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetHUDAmmo();
+
+	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 	}
-	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
 	if (Controller)
 	{
 		Controller->SetHUDCarriedAmmo(CarriedAmmo);
+		Controller->SetHUDWeaponType(EquippedWeapon->GetWeaponName());
 	}
 
 	if (EquippedWeapon->EquipSound)
@@ -285,6 +288,11 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 			EquippedWeapon->EquipSound,
 			Character->GetActorLocation()
 		);
+	}
+
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
 	}
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -353,6 +361,10 @@ void UCombatComponent::FireTimerFinished()
 	if (bFireButtonPressed && EquippedWeapon->bAutomaticWeapon)
 	{
 		Fire();
+	}
+	if (EquippedWeapon->IsEmpty())
+	{
+		Reload();
 	}
 }
 

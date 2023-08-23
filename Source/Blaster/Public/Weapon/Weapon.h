@@ -120,6 +120,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
+	UPROPERTY(EditAnywhere)
+	FText WeaponName = FText();
 
 public:	
 	
@@ -130,6 +132,7 @@ public:
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
 	bool IsEmpty();
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
+	FORCEINLINE FText GetWeaponName() const { return WeaponName; }
 	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 };
