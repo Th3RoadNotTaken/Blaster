@@ -128,6 +128,10 @@ private:
 	UFUNCTION()
 	void OnRep_CombatState();
 
+	void WeaponDropped();
+	UFUNCTION(Server, Reliable)
+	void ServerDropped();
+
 public:	
 
 };

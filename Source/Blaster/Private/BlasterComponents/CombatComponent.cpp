@@ -488,3 +488,24 @@ int32 UCombatComponent::AmountToReload()
 	}
 	return 0;
 }
+
+void UCombatComponent::WeaponDropped()
+{
+	Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+	if (Controller)
+	{
+		Controller->SetHUDWeaponAmmo(0);
+		Controller->SetHUDCarriedAmmo(0);
+		Controller->SetHUDWeaponType(FText());
+	}
+	ServerDropped();
+}
+
+void UCombatComponent::ServerDropped_Implementation()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Dropped();
+		EquippedWeapon = nullptr;
+	}
+}

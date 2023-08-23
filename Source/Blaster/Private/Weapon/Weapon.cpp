@@ -102,6 +102,19 @@ void AWeapon::SetHUDAmmo()
 	}
 }
 
+void AWeapon::SetWeaponName(FText Name)
+{
+	BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
+	if (BlasterOwnerCharacter)
+	{
+		BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(BlasterOwnerCharacter->Controller) : BlasterOwnerController;
+		if (BlasterOwnerController)
+		{
+			BlasterOwnerController->SetHUDWeaponType(Name);
+		}
+	}
+}
+
 void AWeapon::SpendRound()
 {
 	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
@@ -135,15 +148,7 @@ void AWeapon::OnRep_Owner()
 	else
 	{
 		SetHUDAmmo();
-		BlasterOwnerCharacter = BlasterOwnerCharacter == nullptr ? Cast<ABlasterCharacter>(GetOwner()) : BlasterOwnerCharacter;
-		if (BlasterOwnerCharacter)
-		{
-			BlasterOwnerController = BlasterOwnerController == nullptr ? Cast<ABlasterPlayerController>(BlasterOwnerCharacter->Controller) : BlasterOwnerController;
-			if (BlasterOwnerController)
-			{
-				BlasterOwnerController->SetHUDWeaponType(WeaponName);
-			}
-		}
+		SetWeaponName(WeaponName);
 	}
 }
 
@@ -228,6 +233,7 @@ void AWeapon::Dropped()
 	SetWeaponState(EWeaponState::EWS_Dropped);
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	WeaponMesh->DetachFromComponent(DetachRules);
+	SetWeaponName(FText());
 	SetOwner(nullptr);
 	BlasterOwnerCharacter = nullptr;
 	BlasterOwnerController = nullptr;
