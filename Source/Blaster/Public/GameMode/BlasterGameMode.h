@@ -16,10 +16,24 @@ class BLASTER_API ABlasterGameMode : public AGameMode
 	
 public:
 
+	ABlasterGameMode();
+	virtual void Tick(float DeltaTime) override;
 	virtual void PlayerEliminated(class ABlasterCharacter* ElimmedCharacter, class ABlasterPlayerController* VictimController, ABlasterPlayerController* AttackerController);
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
+
+	UPROPERTY(EditDefaultsOnly)
+	float WarmupTime = 5.f;
+
+	// Getting the level starting time as GetWorld()->GetTimeSeconds() will return the total time since main menu
+	float LevelStartingTime = 0.f;
+
+protected:
+
+	virtual void BeginPlay() override;
+	virtual void OnMatchStateSet() override;
 
 private:
 
 	int32 CalculateFavourableRespawnPoint(TArray<AActor*> PlayerStarts, TArray<AActor*> BlasterActors);
+	float CountdownTime = 0.f;
 };

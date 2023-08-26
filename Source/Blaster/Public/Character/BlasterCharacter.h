@@ -34,6 +34,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
+	// Setting the input mapping context here as begin play might be too early
+	virtual void PossessedBy(AController* NewController) override;
+	void AddInputMappingContext();
 	
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();

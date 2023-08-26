@@ -136,6 +136,23 @@ void ABlasterCharacter::PostInitializeComponents()
 	}
 }
 
+void ABlasterCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	AddInputMappingContext();
+}
+
+void ABlasterCharacter::AddInputMappingContext()
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(BlasterCharacterMappingContext, 0);
+		}
+	}
+}
+
 void ABlasterCharacter::PlayFireMontage(bool bAiming)
 {
 	if (Combat == nullptr || Combat->EquippedWeapon == nullptr)
@@ -217,6 +234,7 @@ void ABlasterCharacter::MulticastElim_Implementation()
 	if (BlasterPlayerController)
 	{
 		BlasterPlayerController->SetHUDWeaponAmmo(0);
+		BlasterPlayerController->SetHUDCarriedAmmo(0);
 		BlasterPlayerController->SetHUDWeaponType(FText());
 	}
 	bElimmed = true;
