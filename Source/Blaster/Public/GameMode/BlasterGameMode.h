@@ -6,6 +6,11 @@
 #include "GameFramework/GameMode.h"
 #include "BlasterGameMode.generated.h"
 
+namespace MatchState
+{
+	extern BLASTER_API const FName Cooldown; // Match duration has been reached, display winner and begin cooldown timer
+}
+
 /**
  * 
  */
@@ -22,7 +27,11 @@ public:
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 
 	UPROPERTY(EditDefaultsOnly)
-	float WarmupTime = 5.f;
+	float WarmupTime = 10.f;
+	UPROPERTY(EditDefaultsOnly)
+	float MatchTime = 120.f;
+	UPROPERTY(EditDefaultsOnly)
+	float CooldownTime = 10.f;
 
 	// Getting the level starting time as GetWorld()->GetTimeSeconds() will return the total time since main menu
 	float LevelStartingTime = 0.f;
@@ -36,4 +45,8 @@ private:
 
 	int32 CalculateFavourableRespawnPoint(TArray<AActor*> PlayerStarts, TArray<AActor*> BlasterActors);
 	float CountdownTime = 0.f;
+
+public:
+	
+	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }
 };

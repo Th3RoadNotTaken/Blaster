@@ -16,6 +16,7 @@ class BLASTER_API ABlasterPlayerController : public APlayerController
 
 public:
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDScore(float Score);
 	void SetHUDDeaths(int32 Death);
@@ -23,13 +24,15 @@ public:
 	void SetHUDCarriedAmmo(int32 Ammo);
 	void SetHUDWeaponType(FText WeaponType);
 	void SetHUDMatchCountdown(float CountdownTime);
+	void SetHUDWarmupCountdown(float CountdownTime);
 	// Synced with server world clock
 	virtual float GetServerTime();
 	virtual void OnPossess(APawn* InPawn) override;
 	// This function is the earliest we can get current server time.
 	virtual void ReceivedPlayer() override;
 	void OnMatchStateSet(FName State);
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	void HandleMatchHasStarted();
+	void HandleCooldown();
 
 protected:
 
@@ -57,13 +60,23 @@ protected:
 	float TimeSyncFrequency = 5.f;
 	float TimeSyncRunningTime = 0.f;
 	void CheckTimeSync(float DeltaTime);
+	
+	UFUNCTION(Server, Reliable)
+	void ServerCheckMatchState();
+	UFUNCTION(Client, Reliable)
+	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
 
 private:
 
 	UPROPERTY()
 	class ABlasterHUD* BlasterHUD;
+	UPROPERTY()
+	class ABlasterGameMode* BlasterGameMode;
 
-	float MatchTime = 120.f;
+	float MatchTime = 0.f;
+	float WarmupTime = 0.f;
+	float CooldownTime = 0.f;
+	float LevelStartingTime = 0.f;
 	uint32 CountdownInt = 0;
 
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)

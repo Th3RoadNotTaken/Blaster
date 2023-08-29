@@ -4,6 +4,8 @@
 #include "HUD/BlasterHUD.h"
 #include "GameFramework/PlayerController.h"
 #include "HUD/CharacterOverlay.h"
+#include "HUD/Announcement.h"
+#include "Components/TextBlock.h"
 
 void ABlasterHUD::BeginPlay()
 {
@@ -17,6 +19,52 @@ void ABlasterHUD::AddCharacterOverlay()
 	{
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
 		CharacterOverlay->AddToViewport(0);
+	}
+}
+
+void ABlasterHUD::HideCharacterOverlay()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && CharacterOverlay)
+	{
+		CharacterOverlay->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void ABlasterHUD::AddAnnouncement()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && AnnouncementClass)
+	{
+		Announcement = CreateWidget<UAnnouncement>(PlayerController, AnnouncementClass);
+		Announcement->AddToViewport(0);
+	}
+}
+
+void ABlasterHUD::HideAnnouncement()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && Announcement)
+	{
+		Announcement->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void ABlasterHUD::SetAnnouncmentText(FString Text)
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && Announcement)
+	{
+		Announcement->AnnouncmentText->SetText(FText::FromString(Text));
+	}
+}
+
+void ABlasterHUD::HideInfoText()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && Announcement)
+	{
+		Announcement->InfoText->SetText(FText());
 	}
 }
 
