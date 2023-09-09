@@ -91,20 +91,10 @@ void ABlasterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
-	{
-		AimOffset(DeltaTime);
-	}
-	else
-	{
-		TimeSinceLastMovementReplication += DeltaTime;
-		if (TimeSinceLastMovementReplication > 0.25f)
-		{
-			OnRep_ReplicatedMovement();
-		}
-		CalculateAO_Pitch();
-	}
+	RotateInPlace(DeltaTime);
 	HideCameraIfCharacterClose();
+	PollInit();
+
 	if (bIsCrouched)
 	{
 		CameraBoomCurrentLocation = FMath::VInterpTo(CameraBoomCurrentLocation, CameraBoomCrouchDesiredLocation, DeltaTime, 6.f);
@@ -115,8 +105,6 @@ void ABlasterCharacter::Tick(float DeltaTime)
 		CameraBoomCurrentLocation = FMath::VInterpTo(CameraBoomCurrentLocation, CameraBoomDefaultLocation, DeltaTime, 6.f);
 		CameraBoom->SocketOffset = CameraBoomCurrentLocation;
 	}
-
-	PollInit();
 }
 
 void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -125,6 +113,7 @@ void ABlasterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME_CONDITION(ABlasterCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(ABlasterCharacter, Health);
+	DOREPLIFETIME(ABlasterCharacter, bDisableGameplay);
 }
 
 void ABlasterCharacter::PostInitializeComponents()
@@ -150,6 +139,29 @@ void ABlasterCharacter::AddInputMappingContext()
 		{
 			Subsystem->AddMappingContext(BlasterCharacterMappingContext, 0);
 		}
+	}
+}
+
+void ABlasterCharacter::RotateInPlace(float DeltaTime)
+{
+	if (bDisableGameplay)
+	{
+		bUseControllerRotationYaw = false;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
+	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
+	{
+		AimOffset(DeltaTime);
+	}
+	else
+	{
+		TimeSinceLastMovementReplication += DeltaTime;
+		if (TimeSinceLastMovementReplication > 0.25f)
+		{
+			OnRep_ReplicatedMovement();
+		}
+		CalculateAO_Pitch();
 	}
 }
 
@@ -227,6 +239,10 @@ void ABlasterCharacter::Destroyed()
 	{
 		ElimBotComponent->DestroyComponent();
 	}
+	if (Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Destroy();
+	}
 }
 
 void ABlasterCharacter::MulticastElim_Implementation()
@@ -253,10 +269,7 @@ void ABlasterCharacter::MulticastElim_Implementation()
 	// Disable character movement
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	if (BlasterPlayerController)
-	{
-		DisableInput(BlasterPlayerController);
-	}
+	bDisableGameplay = true;
 	// Disable collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -325,6 +338,7 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const 
 
 void ABlasterCharacter::Move(const FInputActionValue& Value)
 {
+	if (bDisableGameplay)return;
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 	const FRotator ControlRotation = GetControlRotation();
 	const FRotator YawRotation(0.f, ControlRotation.Yaw, 0.f);
@@ -345,6 +359,7 @@ void ABlasterCharacter::Look(const FInputActionValue& Value)
 
 void ABlasterCharacter::EKeyPressed()
 {
+	if (bDisableGameplay)return;
 	if (Combat)
 	{
 		if (HasAuthority())
@@ -368,6 +383,7 @@ void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 
 void ABlasterCharacter::CrouchButtonPressed()
 {
+	if (bDisableGameplay)return;
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -380,6 +396,7 @@ void ABlasterCharacter::CrouchButtonPressed()
 
 void ABlasterCharacter::AimButtonPressed()
 {
+	if (bDisableGameplay)return;
 	if (Combat)
 	{
 		Combat->SetAiming(true);
@@ -388,6 +405,7 @@ void ABlasterCharacter::AimButtonPressed()
 
 void ABlasterCharacter::AimButtonReleased()
 {
+	if (bDisableGameplay)return;
 	if (Combat)
 	{
 		Combat->SetAiming(false);
@@ -396,6 +414,7 @@ void ABlasterCharacter::AimButtonReleased()
 
 void ABlasterCharacter::FireButtonPressed()
 {
+	if (bDisableGameplay)return;
 	if (Combat)
 	{
 		Combat->FireButtonPressed(true);
@@ -404,6 +423,7 @@ void ABlasterCharacter::FireButtonPressed()
 
 void ABlasterCharacter::FireButtonReleased()
 {
+	if (bDisableGameplay)return;
 	if (Combat)
 	{
 		Combat->FireButtonPressed(false);
@@ -412,6 +432,7 @@ void ABlasterCharacter::FireButtonReleased()
 
 void ABlasterCharacter::ReloadButtonPressed()
 {
+	if (bDisableGameplay)return;
 	if (Combat)
 	{
 		Combat->Reload();
@@ -420,6 +441,7 @@ void ABlasterCharacter::ReloadButtonPressed()
 
 void ABlasterCharacter::DropButtonPressed()
 {
+	if (bDisableGameplay)return;
 	if (Combat)
 	{
 		Combat->WeaponDropped();
@@ -640,6 +662,7 @@ void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 
 void ABlasterCharacter::Jump()
 {
+	if (bDisableGameplay)return;
 	if (bIsCrouched)
 	{
 		UnCrouch();

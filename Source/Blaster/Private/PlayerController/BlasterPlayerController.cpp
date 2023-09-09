@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "GameMode/BlasterGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "BlasterComponents/CombatComponent.h"
 
 void ABlasterPlayerController::BeginPlay()
 {
@@ -213,6 +214,7 @@ void ABlasterPlayerController::SetHUDMatchCountdown(float CountdownTime)
 		if (CountdownTime < 0.f)
 		{
 			BlasterHUD->CharacterOverlay->MatchCountdownText->SetText(FText());
+			return;
 		}
 
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
@@ -370,5 +372,11 @@ void ABlasterPlayerController::HandleCooldown()
 		BlasterHUD->SetAnnouncmentText(AnnouncmentText);
 		BlasterHUD->HideInfoText();
 		BlasterHUD->HideCharacterOverlay();
+	}
+	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
+	if (BlasterCharacter && BlasterCharacter->GetCombat())
+	{
+		BlasterCharacter->bDisableGameplay = true;
+		BlasterCharacter->GetCombat()->FireButtonPressed(false);
 	}
 }

@@ -15,6 +15,7 @@ namespace MatchState
 
 ABlasterGameMode::ABlasterGameMode()
 {
+	// Stays in WaitingToStart state until we call StartMatch
 	bDelayedStart = true;
 }
 
@@ -48,6 +49,10 @@ void ABlasterGameMode::Tick(float DeltaTime)
 	else if (MatchState == MatchState::Cooldown)
 	{
 		CountdownTime = WarmupTime + MatchTime + CooldownTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		if (CountdownTime <= 0.f)
+		{
+			RestartGame();
+		}
 	}
 }
 
