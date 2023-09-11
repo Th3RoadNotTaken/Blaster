@@ -12,6 +12,8 @@
 #include "GameMode/BlasterGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "BlasterComponents/CombatComponent.h"
+#include "GameState/BlasterGameState.h"
+#include "PlayerState/BlasterPlayerState.h"
 
 void ABlasterPlayerController::BeginPlay()
 {
@@ -211,6 +213,14 @@ void ABlasterPlayerController::SetHUDMatchCountdown(float CountdownTime)
 
 	if (bHUDValid)
 	{
+		if (CountdownTime <= 30.f && BlasterHUD->CharacterOverlay->CountdownAnimation)
+		{
+			BlasterHUD->CharacterOverlay->PlayAnimation(
+				BlasterHUD->CharacterOverlay->CountdownAnimation,
+				0.f,
+				30.f
+			);
+		}
 		if (CountdownTime < 0.f)
 		{
 			BlasterHUD->CharacterOverlay->MatchCountdownText->SetText(FText());
@@ -357,7 +367,7 @@ void ABlasterPlayerController::HandleMatchHasStarted()
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	if (BlasterHUD)
 	{
-		BlasterHUD->AddCharacterOverlay();
+		if (BlasterHUD->CharacterOverlay == nullptr)BlasterHUD->AddCharacterOverlay();
 		BlasterHUD->HideAnnouncement();
 	}
 }
@@ -367,11 +377,32 @@ void ABlasterPlayerController::HandleCooldown()
 	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
 	if (BlasterHUD)
 	{
+		ABlasterGameState* BlasterGameState = Cast<ABlasterGameState>(UGameplayStatics::GetGameState(this));
+		ABlasterPlayerState* BlasterPlayerState = GetPlayerState<ABlasterPlayerState>();
+
 		FString AnnouncmentText("New Match Starts In: ");
 		BlasterHUD->AddAnnouncement();
 		BlasterHUD->SetAnnouncmentText(AnnouncmentText);
-		BlasterHUD->HideInfoText();
 		BlasterHUD->HideCharacterOverlay();
+
+		if (BlasterGameState && BlasterPlayerState)
+		{
+			TArray<ABlasterPlayerState*> TopPlayers = BlasterGameState->TopScoringPlayers;
+			FString InfoText;
+			if (TopPlayers.Num() == 0)
+			{
+				InfoText = FString("There is no winner...");
+			}
+			else
+			{
+				InfoText = FString("The winners are: \n");
+				for (auto BlasterPlayer : TopPlayers)
+				{
+					InfoText.Appendf(TEXT("%s\n"), *BlasterPlayer->GetPlayerName());
+				}
+			}
+			BlasterHUD->SetInfoText(InfoText);
+		}
 	}
 	ABlasterCharacter* BlasterCharacter = Cast<ABlasterCharacter>(GetPawn());
 	if (BlasterCharacter && BlasterCharacter->GetCombat())

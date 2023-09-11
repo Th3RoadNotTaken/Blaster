@@ -68,6 +68,15 @@ void ABlasterHUD::HideInfoText()
 	}
 }
 
+void ABlasterHUD::SetInfoText(FString Text)
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && Announcement)
+	{
+		Announcement->InfoText->SetText(FText::FromString(Text));
+	}
+}
+
 void ABlasterHUD::DrawHUD()
 {
 	Super::DrawHUD();

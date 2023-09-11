@@ -52,6 +52,7 @@ public:
 	void HideAnnouncement();
 	void SetAnnouncmentText(FString Text);
 	void HideInfoText();
+	void SetInfoText(FString Text);
 
 protected:
 
