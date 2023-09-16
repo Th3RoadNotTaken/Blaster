@@ -33,6 +33,7 @@ public:
 	void OnMatchStateSet(FName State);
 	void HandleMatchHasStarted();
 	void HandleCooldown();
+	void SetHUDSniperScope(bool bIsAiming);
 
 protected:
 

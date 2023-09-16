@@ -4,6 +4,7 @@
 #include "HUD/BlasterHUD.h"
 #include "GameFramework/PlayerController.h"
 #include "HUD/CharacterOverlay.h"
+#include "HUD/SniperScope.h"
 #include "HUD/Announcement.h"
 #include "Components/TextBlock.h"
 
@@ -28,6 +29,16 @@ void ABlasterHUD::HideCharacterOverlay()
 	if (PlayerController && CharacterOverlay)
 	{
 		CharacterOverlay->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void ABlasterHUD::AddSniperScope()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (PlayerController && SniperScopeClass)
+	{
+		SniperScopeWidget = CreateWidget<USniperScope>(PlayerController, SniperScopeClass);
+		SniperScopeWidget->AddToViewport(0);
 	}
 }
 

@@ -5,8 +5,10 @@
 #include "HUD/BlasterHUD.h"
 #include "HUD/CharacterOverlay.h"
 #include "HUD/Announcement.h"
+#include "HUD/SniperScope.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Animation/WidgetAnimation.h"
 #include "Character/BlasterCharacter.h"
 #include "Net/UnrealNetwork.h"
 #include "GameMode/BlasterGameMode.h"
@@ -409,5 +411,38 @@ void ABlasterPlayerController::HandleCooldown()
 	{
 		BlasterCharacter->bDisableGameplay = true;
 		BlasterCharacter->GetCombat()->FireButtonPressed(false);
+	}
+}
+
+void ABlasterPlayerController::SetHUDSniperScope(bool bIsAiming)
+{
+	BlasterHUD = BlasterHUD == nullptr ? Cast<ABlasterHUD>(GetHUD()) : BlasterHUD;
+	bool bHUDValid =
+		BlasterHUD &&
+		BlasterHUD->SniperScopeWidget &&
+		BlasterHUD->SniperScopeWidget->ScopeZoomIn;
+
+	if (BlasterHUD && !BlasterHUD->SniperScopeWidget)
+	{
+		BlasterHUD->AddSniperScope();
+	}
+
+	if (bHUDValid)
+	{
+		if (bIsAiming)
+		{
+			BlasterHUD->SniperScopeWidget->PlayAnimation(
+				BlasterHUD->SniperScopeWidget->ScopeZoomIn
+			);
+		}
+		else
+		{
+			BlasterHUD->SniperScopeWidget->PlayAnimation(
+				BlasterHUD->SniperScopeWidget->ScopeZoomIn,
+				0.f,
+				1,
+				EUMGSequencePlayMode::Reverse
+			);
+		}
 	}
 }

@@ -17,6 +17,7 @@ class BLASTER_API AHitScanWeapon : public AWeapon
 public:
 
 	virtual void Fire(const FVector& HitTarget) override;
+	float test;
 
 protected:
 

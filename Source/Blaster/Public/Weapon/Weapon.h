@@ -66,6 +66,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USoundCue* EquipSound;
 
+	UPROPERTY(EditAnywhere)
+	USoundCue* ScopeInSound;
+	UPROPERTY(EditAnywhere)
+	USoundCue* ScopeOutSound;
+
 protected:
 	
 	virtual void BeginPlay() override;

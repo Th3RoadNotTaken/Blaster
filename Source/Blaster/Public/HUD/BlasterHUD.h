@@ -8,6 +8,7 @@
 
 class UCharacterOverlay;
 class UAnnouncement;
+class USniperScope;
 
 USTRUCT(BlueprintType)
 struct FHUDPackage
@@ -43,6 +44,12 @@ public:
 	UCharacterOverlay* CharacterOverlay;
 	void AddCharacterOverlay();
 	void HideCharacterOverlay();
+
+	UPROPERTY(EditAnywhere, Category = "Scopes")
+	TSubclassOf<UUserWidget> SniperScopeClass;
+	UPROPERTY()
+	USniperScope* SniperScopeWidget;
+	void AddSniperScope();
 
 	UPROPERTY(EditAnywhere, Category = "Announcements")
 	TSubclassOf<UUserWidget> AnnouncementClass;

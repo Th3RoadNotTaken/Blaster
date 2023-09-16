@@ -232,6 +232,7 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
+	if (Character == nullptr || EquippedWeapon == nullptr)return;
 	bAiming = bIsAiming;
 	/*if (!Character->HasAuthority())
 	{
@@ -243,6 +244,30 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	if (Character)
 	{
 		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	}
+	if (Character->IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	{
+		Controller = Controller == nullptr ? Cast<ABlasterPlayerController>(Character->Controller) : Controller;
+		if (Controller)
+		{
+			Controller->SetHUDSniperScope(bIsAiming);
+			if (bIsAiming && EquippedWeapon->ScopeInSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(
+					this,
+					EquippedWeapon->ScopeInSound,
+					Character->GetActorLocation()
+				);
+			}
+			else if (!bIsAiming && EquippedWeapon->ScopeOutSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(
+					this,
+					EquippedWeapon->ScopeOutSound,
+					Character->GetActorLocation()
+				);
+			}
+		}
 	}
 }
 
@@ -396,6 +421,7 @@ void UCombatComponent::InitializeCarriedAmmo()
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_Pistol, StartingPistolAmmo);
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperAmmo);
 }
 
 void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
