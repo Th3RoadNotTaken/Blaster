@@ -18,4 +18,4 @@ I'm creating a competitive shooter which will consist of game modes such as team
 * Parameterized material instances for dissolving the character mesh once eliminated.
 * HUD elements such as health bars, ammo count, match timers, player scores, etc. 
 
-I'm currently working on implementing Weapon Ammo and Player's Carried Ammo.
+I'm currently working on creating different weapon types such as Rifles, SMGs, Rocket Launchers, Shotguns, Grenade Launchers, etc.
