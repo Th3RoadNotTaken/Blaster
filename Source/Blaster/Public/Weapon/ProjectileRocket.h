@@ -33,25 +33,6 @@ protected:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly, Category = "Radial Properties")
-	float DamageInnerRadius = 200.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Radial Properties")
-	float DamageOuterRadius = 500.f;
-
-	UPROPERTY(EditAnywhere)
-	class UNiagaraSystem* TrailSystem;
-
-	UPROPERTY()
-	class UNiagaraComponent* TrailSystemComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	class UStaticMeshComponent* RocketMesh;
-
 	UPROPERTY(VisibleAnywhere)
 	class URocketMovementComponent* RocketMovementComponent;
-
-	FTimerHandle DestroyTimer;
-	void DestroyTimerFinished();
-	UPROPERTY(EditAnywhere)
-	float DestroyTime = 3.f;
 };
