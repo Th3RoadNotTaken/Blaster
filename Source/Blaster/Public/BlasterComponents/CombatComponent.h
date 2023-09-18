@@ -29,6 +29,9 @@ public:
 	void EquipWeapon(AWeapon* WeaponToEquip);
 	void Reload();
 	UFUNCTION(BlueprintCallable)
+	void ShotgunShellReload();
+	void JumpToShotgunEnd();
+	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 	void FireButtonPressed(bool bPressed);
 
@@ -119,6 +122,7 @@ private:
 	int32 StartingGrenadeLauncherAmmo = 8;
 	void InitializeCarriedAmmo();
 	void UpdateAmmoValues();
+	void UpdateShotgunAmmoValues();
 
 	/** 
 	* Aiming and FOV
