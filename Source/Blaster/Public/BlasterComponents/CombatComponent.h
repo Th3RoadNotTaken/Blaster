@@ -34,6 +34,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 	void FireButtonPressed(bool bPressed);
+	UFUNCTION(BlueprintCallable)
+	void ThrowGrenadeFinished();
 
 protected:
 	
@@ -58,6 +60,10 @@ protected:
 	// This function will handle all reload functionality on the server and all clients
 	void HandleReload();
 	int32 AmountToReload();
+
+	void ThrowGrenade();
+	UFUNCTION(Server, Reliable)
+	void ServerThrowGrenade();
 
 private:
 

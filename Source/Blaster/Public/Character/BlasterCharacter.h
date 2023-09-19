@@ -41,6 +41,7 @@ public:
 	void PlayFireMontage(bool bAiming);
 	void PlayReloadMontage();
 	void PlayElimMontage();
+	void PlayThrowGrenadeMontage();
 	// This function is used whenever movement changes and is replicated. We will use this function to update the delta for turn in place for sim proxies
 	virtual void OnRep_ReplicatedMovement() override; 
 	// To be called only on the server
@@ -70,6 +71,7 @@ protected:
 	void FireButtonReleased();
 	void ReloadButtonPressed();
 	void DropButtonPressed();
+	void GrenadeButtonPressed();
 
 	void AimOffset(float DeltaTime);
 	void CalculateAO_Pitch();
@@ -106,6 +108,8 @@ protected:
 	UInputAction* ReloadAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* DropAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	UInputAction* GrenadeThrowAction;
 
 private:
 
@@ -152,6 +156,8 @@ private:
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	UAnimMontage* ElimMontage;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage* ThrowGrenadeMontage;
 
 	void HideCameraIfCharacterClose();
 	UPROPERTY(EditAnywhere)
