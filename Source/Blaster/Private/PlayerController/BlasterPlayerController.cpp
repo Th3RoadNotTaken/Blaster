@@ -230,7 +230,7 @@ void ABlasterPlayerController::SetHUDMatchCountdown(float CountdownTime)
 		}
 
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
-		int32 Seconds = CountdownTime - Minutes * 60.f;
+		int32 Seconds = CountdownTime - Minutes * 60;
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		BlasterHUD->CharacterOverlay->MatchCountdownText->SetText(FText::FromString(CountdownText));
 	}
@@ -253,7 +253,7 @@ void ABlasterPlayerController::SetHUDWarmupCountdown(float CountdownTime)
 		}
 
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
-		int32 Seconds = CountdownTime - Minutes * 60.f;
+		int32 Seconds = CountdownTime - Minutes * 60;
 		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		BlasterHUD->Announcement->WarmupTime->SetText(FText::FromString(CountdownText));
 	}
@@ -261,6 +261,14 @@ void ABlasterPlayerController::SetHUDWarmupCountdown(float CountdownTime)
 
 void ABlasterPlayerController::SetHUDTime()
 {
+	if (HasAuthority())
+	{
+		BlasterGameMode = BlasterGameMode == nullptr ? Cast<ABlasterGameMode>(UGameplayStatics::GetGameMode(this)) : BlasterGameMode;
+		if (BlasterGameMode)
+		{
+			LevelStartingTime = BlasterGameMode->LevelStartingTime;
+		}
+	}
 
 	float TimeLeft = 0.f;
 	if (MatchState == MatchState::WaitingToStart) TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
@@ -302,7 +310,7 @@ void ABlasterPlayerController::ServerRequestServerTime_Implementation(float Time
 void ABlasterPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest, float TimeServerReceivedClientRequest)
 {
 	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
-	float CurrentServerTime = TimeServerReceivedClientRequest + RoundTripTime / 2.f;
+	float CurrentServerTime = TimeServerReceivedClientRequest + (RoundTripTime * 0.5f);
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
 }
 
